@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title>Pinkdev
+SDK for Image Processing Operators </title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="tutorialEnglish.tex"> 
+<meta name="date" content="2013-09-27 06:36:00"> 
+<link rel="stylesheet" type="text/css" href="tutorialEnglish.css"> 
+</head><body 
+>
+   <div class="maketitle">
+                                                                  
+
+                                                                  
+                                                                  
+
+                                                                  
+
+<h2 class="titleHead">Pinkdev<br />
+SDK for Image Processing Operators </h2>
+<div class="author" ><span 
+class="cmr-12">M. Couprie and L. Najman</span></div><br />
+<div class="date" ><span 
+class="cmr-12">September 27, 2013</span></div>
+   </div>
+   <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-10001"></a>Introduction</h3>
+<!--l. 15--><p class="noindent" >This environment aims at facilitating the development of your first image processing
+operators. It includes features such as input/output that allows reading and writing
+grey-scale images, under the <span 
+class="cmbx-10">pgm </span>format. pgm stands for Portable Gray Map,
+and this is the name of a standard format. Pinkdev also proposes a data
+structure allowing to manipulate image pixels, once an image is loaded into
+memory.
+<!--l. 22--><p class="indent" >   To visualize images, any standard tool can be used. We recommand <span 
+class="cmbx-10">imview</span>, but
+are not sure it is available everywhere at ESIEE. You can install it at home, following
+this link <a 
+href="http://hugues.zahlt.info/Imview.html" class="url" ><span 
+class="cmtt-10">http://hugues.zahlt.info/Imview.html</span></a>.
+<!--l. 28--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
+ id="x1-20002"></a>xvimage structure</h3>
+<!--l. 30--><p class="noindent" >An image is seen as a rectangular table, with two dimensions of <span 
+class="cmti-10">pixels </span>or picture
+elements. The intensity of each pixel (its grey level) es thus given by a byte (unsigned
+char, value between 0 and 255).
+                                                                  
+
+                                                                  
+<!--l. 35--><p class="indent" >   <img 
+src="tutorialEnglish0x.png" alt="PIC" class="graphics" width="513.92pt" height="295.1025pt" ><!--tex4ht:graphics  
+name="tutorialEnglish0x.png" src="xvimage1.eps"  
+-->
+<!--l. 37--><p class="indent" >   In memory, an image is stored in a structure of type <span 
+class="cmbx-10">xvimage</span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-1">
+struct&#x00A0;xvimage&#x00A0;{
+&#x00A0;<br />&#x00A0;&#x00A0;char&#x00A0;*name;
+&#x00A0;<br />&#x00A0;&#x00A0;uint32_t&#x00A0;row_size;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;Size&#x00A0;of&#x00A0;a&#x00A0;row&#x00A0;(number&#x00A0;of&#x00A0;columns)&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;uint32_t&#x00A0;col_size;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;Size&#x00A0;of&#x00A0;a&#x00A0;column&#x00A0;(number&#x00A0;of&#x00A0;rows)&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;uint32_t&#x00A0;depth_size;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;Number&#x00A0;of&#x00A0;planes&#x00A0;(for&#x00A0;3d&#x00A0;images)&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;uint32_t&#x00A0;data_storage_type;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;storage&#x00A0;type&#x00A0;for&#x00A0;disk&#x00A0;data&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;void&#x00A0;*&#x00A0;image_data;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;pointer&#x00A0;on&#x00A0;raw&#x00A0;data&#x00A0;*/
+&#x00A0;<br />};
+</div>
+<!--l. 48--><p class="nopar" >
+<!--l. 50--><p class="indent" >   While using this structure, the array <span 
+class="cmbx-10">imagedata </span>is a one dimensional array
+whose size depends on the size of the image to store. If the image is of size <span 
+class="cmmi-10">m </span><span 
+class="cmsy-10">&#x00D7; </span><span 
+class="cmmi-10">n</span>,
+then <span 
+class="cmbx-10">imagedata </span>is of size <span 
+class="cmmi-10">mn</span>. Pixels are stored in this array in the following
+order.
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-2">
+pixel&#x00A0;0&#x00A0;of&#x00A0;line&#x00A0;1
+&#x00A0;<br />pixel&#x00A0;1&#x00A0;of&#x00A0;line&#x00A0;&#x00A0;1
+&#x00A0;<br />...
+&#x00A0;<br />pixel&#x00A0;row_size-1&#x00A0;of&#x00A0;line&#x00A0;&#x00A0;1
+&#x00A0;<br />pixel&#x00A0;0&#x00A0;of&#x00A0;line&#x00A0;2
+&#x00A0;<br />...
+</div>
+<!--l. 62--><p class="nopar" >
+<!--l. 64--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
+ id="x1-30003"></a>Accessing a pixel</h3>
+<!--l. 67--><p class="noindent" >To access a pixel we first need to get the address of the array that contains the
+pixels:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-3">
+&#x00A0;&#x00A0;ptrimage&#x00A0;=&#x00A0;(unsigned&#x00A0;char&#x00A0;*)(image-&#x003E;imagedata);
+</div>
+<!--l. 71--><p class="nopar" >
+<!--l. 73--><p class="indent" >   Then, to access the <span 
+class="cmmi-10">i</span><sup>th</sup> pixel of the <span 
+class="cmmi-10">j</span><sup>th</sup> row, we can use the following:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-4">
+&#x00A0;&#x00A0;ptrimage[j&#x00A0;*&#x00A0;rs&#x00A0;+&#x00A0;i]
+</div>
+<!--l. 78--><p class="nopar" >
+<!--l. 80--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
+ id="x1-40004"></a>An example</h3>
+<!--l. 82--><p class="noindent" >Here is an example of a <span 
+class="cmbx-10">laddconst </span>function that add a constant value to the
+greyscale value of each pixel, unless such an operation will overflow 255.
+The source code is located in: <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">src/lib/laddconst.c</span></span></span>, the header file is:
+<span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">include/laddconst.h</span></span></span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-5">
+/*&#x00A0;ajoute&#x00A0;une&#x00A0;constante&#x00A0;a&#x00A0;une&#x00A0;image&#x00A0;&#x00A0;-&#x00A0;seuil&#x00A0;si&#x00A0;depassement&#x00A0;*/
+&#x00A0;<br />/*&#x00A0;Add&#x00A0;a&#x00A0;const&#x00A0;to&#x00A0;an&#x00A0;image&#x00A0;-&#x00A0;thresholding&#x00A0;if&#x00A0;overflow&#x00A0;*/
+&#x00A0;<br />/*&#x00A0;Michel&#x00A0;Couprie&#x00A0;-&#x00A0;janvier&#x00A0;1999&#x00A0;*/
+&#x00A0;<br />
+&#x00A0;<br />#include&#x00A0;&#x003C;stdio.h&#x003E;
+&#x00A0;<br />#include&#x00A0;&#x003C;stdlib.h&#x003E;
+&#x00A0;<br />#include&#x00A0;&#x003C;laddconst.h&#x003E;
+&#x00A0;<br />#include&#x00A0;&#x003C;mcimage.h&#x003E;
+&#x00A0;<br />
+&#x00A0;<br />/*&#x00A0;====================================&#x00A0;*/
+&#x00A0;<br />int&#x00A0;laddconst(struct&#x00A0;xvimage&#x00A0;*&#x00A0;image,&#x00A0;/*&#x00A0;input:&#x00A0;image&#x00A0;to&#x00A0;process&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;output:&#x00A0;modified&#x00A0;image&#x00A0;&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;int&#x00A0;constante&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;/*&#x00A0;input:&#x00A0;value&#x00A0;to&#x00A0;add&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;)
+&#x00A0;<br />/*&#x00A0;====================================&#x00A0;*/
+&#x00A0;<br />{
+&#x00A0;<br />&#x00A0;&#x00A0;int&#x00A0;indexpixel;
+&#x00A0;<br />&#x00A0;&#x00A0;unsigned&#x00A0;char&#x00A0;*ptrimage;
+&#x00A0;<br />&#x00A0;&#x00A0;unsigned&#x00A0;long&#x00A0;newval;
+&#x00A0;<br />&#x00A0;&#x00A0;int&#x00A0;rs,&#x00A0;cs,&#x00A0;N;
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;rs&#x00A0;=&#x00A0;image-&#x003E;row_size;
+&#x00A0;<br />&#x00A0;&#x00A0;cs&#x00A0;=&#x00A0;image-&#x003E;col_size;
+&#x00A0;<br />&#x00A0;&#x00A0;N&#x00A0;=&#x00A0;rs&#x00A0;*&#x00A0;cs;
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;/*&#x00A0;----------------------------------------------------------&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;/*&#x00A0;computing&#x00A0;the&#x00A0;result&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;/*&#x00A0;----------------------------------------------------------&#x00A0;*/
+&#x00A0;<br />&#x00A0;&#x00A0;ptrimage&#x00A0;=&#x00A0;(unsigned&#x00A0;char&#x00A0;*)(image-&#x003E;imagedata);
+&#x00A0;<br />&#x00A0;&#x00A0;for&#x00A0;(indexpixel&#x00A0;=&#x00A0;0;&#x00A0;indexpixel&#x00A0;&#x003C;&#x00A0;N;&#x00A0;indexpixel++)
+&#x00A0;<br />&#x00A0;&#x00A0;{
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;newval&#x00A0;=&#x00A0;(int)(ptrimage[indexpixel])&#x00A0;+&#x00A0;constante;
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;if&#x00A0;(newval&#x00A0;&#x003C;&#x00A0;NDG_MIN)&#x00A0;newval&#x00A0;=&#x00A0;NDG_MIN;
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;if&#x00A0;(newval&#x00A0;&#x003E;&#x00A0;NDG_MAX)&#x00A0;newval&#x00A0;=&#x00A0;NDG_MAX;
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ptrimage[indexpixel]&#x00A0;=&#x00A0;(unsigned&#x00A0;char)newval;
+&#x00A0;<br />&#x00A0;&#x00A0;}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;return&#x00A0;1;&#x00A0;/*&#x00A0;Everything&#x00A0;went&#x00A0;fine&#x00A0;*/
+&#x00A0;<br />}
+</div>
+<!--l. 128--><p class="nopar" >
+<!--l. 130--><p class="indent" >   Of course, we need a main to compile this fucntion. The main has to do the three
+following operations: to read the image from a file, to call the <span 
+class="cmbx-10">laddconst </span>function,
+                                                                  
+
+                                                                  
+and to store the result in another file.
+<!--l. 134--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
+ id="x1-50005"></a>Reading image files</h3>
+<!--l. 136--><p class="noindent" >Reading an image from a file with the pgm format is dont thanks to a call to the
+function <span 
+class="cmbx-10">readimage</span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-6">
+&#x00A0;&#x00A0;struct&#x00A0;xvimage&#x00A0;*&#x00A0;image;
+&#x00A0;<br />&#x00A0;&#x00A0;char&#x00A0;*filename;
+&#x00A0;<br />&#x00A0;&#x00A0;...
+&#x00A0;<br />&#x00A0;&#x00A0;image&#x00A0;=&#x00A0;readimage(filename);
+</div>
+<!--l. 144--><p class="nopar" >
+<!--l. 146--><p class="indent" >   This function returns a NULL pointer if the reading did not run correctly. The
+function <span 
+class="cmbx-10">readimage </span>is defined in <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">src/lib/mcimage.c</span></span></span>, while the header is in
+<span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">include/mcimage.h</span></span></span>.
+<!--l. 152--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
+ id="x1-60006"></a>Writing an image file</h3>
+<!--l. 154--><p class="noindent" >Writing an image in the <span 
+class="cmbx-10">pgm </span>format is done thanks to a call to the function
+<span 
+class="cmbx-10">writeimage</span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-7">
+&#x00A0;&#x00A0;struct&#x00A0;xvimage&#x00A0;*&#x00A0;image;
+&#x00A0;<br />&#x00A0;&#x00A0;char&#x00A0;*filename;
+&#x00A0;<br />&#x00A0;&#x00A0;...
+&#x00A0;<br />&#x00A0;&#x00A0;writeimage(image,&#x00A0;filename);
+</div>
+<!--l. 162--><p class="nopar" >
+<!--l. 164--><p class="indent" >   The function <span 
+class="cmbx-10">writeimage </span>is defined in <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">src/lib/mcimage.c</span></span></span>, while the header is
+in <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">include/mcimage.h</span></span></span>.
+<!--l. 167--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
+ id="x1-70007"></a>Allocating a structure <span 
+class="cmbx-10">xvimage</span></h3>
+<!--l. 169--><p class="noindent" >In a call to <span 
+class="cmbx-10">readimage</span>, a <span 
+class="cmbx-10">xvimage </span>structure is automatically allocated. To allocate
+an <span 
+class="cmbx-10">xvimage </span>structure without a call to <span 
+class="cmbx-10">readimage</span>, we can use the function
+<span 
+class="cmbx-10">allocimage</span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-8">
+&#x00A0;&#x00A0;struct&#x00A0;xvimage&#x00A0;*&#x00A0;image;
+&#x00A0;<br />&#x00A0;&#x00A0;int&#x00A0;rs,&#x00A0;cs;
+&#x00A0;<br />&#x00A0;&#x00A0;...
+&#x00A0;<br />&#x00A0;&#x00A0;image&#x00A0;=&#x00A0;allocimage(NULL,&#x00A0;rs,&#x00A0;cs,&#x00A0;1,&#x00A0;VFF_TYP_1_BYTE);
+</div>
+<!--l. 179--><p class="nopar" >
+<!--l. 181--><p class="indent" >   To free the allocated memory, we can use the function <span 
+class="cmbx-10">freeimage</span>:
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-9">
+&#x00A0;&#x00A0;freeimage(image);
+</div>
+<!--l. 186--><p class="nopar" >
+<!--l. 188--><p class="indent" >   The functions <span 
+class="cmbx-10">allocimage </span>and <span 
+class="cmbx-10">freeimage </span>are defined in <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">src/lib/mcimage.c</span></span></span>,
+while the headers are in <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">include/mcimage.h</span></span></span>.
+<!--l. 192--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">8   </span> <a 
+ id="x1-80008"></a>An example</h3>
+<!--l. 193--><p class="noindent" >Here is a main that calls the function <span 
+class="cmbx-10">laddconst </span>(source: <span class="obeylines-h"><span class="verb"><span 
+class="cmtt-10">src/com/addconst.c</span></span></span>):
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-10">
+/*&#x00A0;Call&#x00A0;to&#x00A0;laddconst&#x00A0;*/
+&#x00A0;<br />
+&#x00A0;<br />#include&#x00A0;&#x003C;stdio.h&#x003E;
+&#x00A0;<br />#include&#x00A0;&#x003C;mcimage.h&#x003E;
+&#x00A0;<br />#include&#x00A0;&#x003C;laddconst.h&#x003E;
+&#x00A0;<br />
+&#x00A0;<br />/*&#x00A0;===============================================================&#x00A0;*/
+&#x00A0;<br />int&#x00A0;main(int&#x00A0;argc,&#x00A0;char&#x00A0;**argv)
+&#x00A0;<br />/*&#x00A0;===============================================================&#x00A0;*/
+&#x00A0;<br />{
+&#x00A0;<br />&#x00A0;&#x00A0;struct&#x00A0;xvimage&#x00A0;*&#x00A0;image1;
+&#x00A0;<br />&#x00A0;&#x00A0;int&#x00A0;constante;
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;if&#x00A0;(argc&#x00A0;!=&#x00A0;4)
+&#x00A0;<br />&#x00A0;&#x00A0;{
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;fprintf(stderr,&#x00A0;"usage:&#x00A0;%s&#x00A0;in1.pgm&#x00A0;constante&#x00A0;out.pgm&#x00A0;\n",&#x00A0;argv[0]);
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;exit(0);
+&#x00A0;<br />&#x00A0;&#x00A0;}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;image1&#x00A0;=&#x00A0;readimage(argv[1]);
+&#x00A0;<br />&#x00A0;&#x00A0;if&#x00A0;(image1&#x00A0;==&#x00A0;NULL)
+&#x00A0;<br />&#x00A0;&#x00A0;{
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;fprintf(stderr,&#x00A0;"addconst:&#x00A0;readimage&#x00A0;failed\n");
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;exit(0);
+&#x00A0;<br />&#x00A0;&#x00A0;}
+&#x00A0;<br />&#x00A0;&#x00A0;constante&#x00A0;=&#x00A0;atoi(argv[2]);
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;if&#x00A0;(!&#x00A0;laddconst(image1,&#x00A0;constante))
+&#x00A0;<br />&#x00A0;&#x00A0;{
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;fprintf(stderr,&#x00A0;"addconst:&#x00A0;function&#x00A0;laddconst&#x00A0;failed\n");
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;exit(0);
+&#x00A0;<br />&#x00A0;&#x00A0;}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;writeimage(image1,&#x00A0;argv[3]);
+&#x00A0;<br />&#x00A0;&#x00A0;freeimage(image1);
+&#x00A0;<br />
+&#x00A0;<br />}&#x00A0;/*&#x00A0;main&#x00A0;*/
+</div>
+<!--l. 234--><p class="nopar" >
+<!--l. 236--><p class="noindent" >
+                                                                  
+
+                                                                  
+   <h3 class="sectionHead"><span class="titlemark">9   </span> <a 
+ id="x1-90009"></a>Directories</h3>
+<!--l. 238--><p class="noindent" >doc : documentation<br 
+class="newline" />include : header files (.h)<br 
+class="newline" />obj : object files (.o)<br 
+class="newline" />bin : executables<br 
+class="newline" />src/com : sources of the programs that will be run from shell<br 
+class="newline" />src/lib : sources of the basic (mcimage) and processing functions
+    
+</body></html> 
+
+                                                                  
+
+
