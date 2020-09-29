@@ -1,39 +1,36 @@
-/* Call to lhistn */
+/* Call to lhiste */
 
 #include <stdint.h>
 #include <stdio.h>
 #include <mcimage.h>
-#include <lhistn.h>
+#include <lhiste.h>
 #include <stdlib.h>
 
 /* =============================================================== */
 int main(int argc, char **argv)
 /* =============================================================== */
 {
+printf("OK\n");
   struct xvimage * image1;
-  uint32_t low, high;
-
-  if (argc != 5)
-  {
-    fprintf(stderr, "usage: %s in1.pgm, low threshold, high threshold, output image\n", argv[0]);
+	
+  if (argc != 3) {
+    fprintf(stderr, "usage: %s in1.pgm, output image\n", argv[0]);
     exit(0);
   }
+  printf("OK2\n");
 
   image1 = readimage(argv[1]);  
   if (image1 == NULL)
   {
-    fprintf(stderr, "histn: readimage failed\n");
+    fprintf(stderr, "histe: readimage failed\n");
     exit(0);
   }
-  low = atoi(argv[2]);
-  high = atoi(argv[3]);
-  if (! lhistn(image1, low, high))
-  {
-    fprintf(stderr, "histn: function histn failed\n");
+  printf("OK3\n");
+  if (! lhiste(image1)) {
+    fprintf(stderr, "histe: function histe failed\n");
     exit(0);
   }
-
-  writeimage(image1, argv[4]);
+  writeimage(image1, argv[2]);
   freeimage(image1);
 
   return 0;

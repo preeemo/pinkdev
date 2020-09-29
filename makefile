@@ -1,4 +1,4 @@
-EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh
+EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh $(BDIR)/histe $(BDIR)/wavg
 DOC=$(DOCDIR)/tutorialEnglish.html
 
 CCFLAGS = -g -DUNIXIO -Wall
@@ -30,6 +30,12 @@ $(BDIR)/imgdiff:	$(CDIR)/imgdiffEXE.c $(ODIR)/imgdiff.o $(IDIR)/imgdiff.h $(IDIR
 $(BDIR)/thresh:	        $(CDIR)/thresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/thresh.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/thresh.c $(ODIR)/lthresh.o $(ODIR)/mcimage.o -o $(BDIR)/thresh
 
+$(BDIR)/histe:	        $(CDIR)/histe.c $(IDIR)/lhiste.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/histe.o 
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/histe.c $(ODIR)/lhiste.o $(ODIR)/mcimage.o -o $(BDIR)/histe
+	
+$(BDIR)/wavg:	        $(CDIR)/wavg.c $(IDIR)/lwavg.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/wavg.o 
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/wavg.c $(ODIR)/lwavg.o $(ODIR)/mcimage.o -o $(BDIR)/wavg
+
 $(BDIR)/deriche:	$(CDIR)/deriche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lderiche.o
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/deriche.c $(ODIR)/lderiche.o $(ODIR)/mcimage.o -lm -o $(BDIR)/deriche
 
@@ -54,6 +60,12 @@ $(ODIR)/imgdiff.o:	$(LDIR)/imgdiff.c $(IDIR)/imgdiff.h $(IDIR)/mcimage.h
 
 $(ODIR)/thresh.o:	$(LDIR)/lthresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lthresh.c -o $(ODIR)/lthresh.o
+
+$(ODIR)/histe.o:	$(LDIR)/lhiste.c $(IDIR)/lhiste.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lhiste.c -o $(ODIR)/lhiste.o
+
+$(ODIR)/wavg.o:	$(LDIR)/lwavg.c $(IDIR)/lwavg.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lwavg.c -o $(ODIR)/lwavg.o
 
 $(ODIR)/lderiche.o:	$(LDIR)/lderiche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lderiche.c -o $(ODIR)/lderiche.o
