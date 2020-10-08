@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mcimage.h>
-#include <imgdiff.h>
+#include <limgdiff.h>
 
 /* ==================================== */
-uint32_t imgdiff(struct xvimage * image1, /* input: first image to process */  
+uint32_t limgdiff(struct xvimage * image1, /* input: first image to process */  
                                           /* output: modified image  */  
               struct xvimage * image2     /* input: second image to process */     
              )

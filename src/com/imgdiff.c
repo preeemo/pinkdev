@@ -1,21 +1,21 @@
-/* Call to imgdiff */
+/* Call to limgdiff */
 
 #include <stdint.h>
 #include <stdio.h>
 #include <mcimage.h>
-#include <imgdiff.h>
+#include <limgdiff.h>
 #include <stdlib.h>
 
 /* =============================================================== */
-int main(int argc, char **argv)
+int main(int argc, char **argv){
 /* =============================================================== */
-{
+
   struct xvimage * image1;
   struct xvimage * image2;
 
 
   if (argc != 4) {
-    fprintf(stderr, "usage: %s in1.pgm in2.pmg out.pgm \n", argv[0]);
+    fprintf(stderr, "usage: %s in1.pgm, in2.pmg, out.pgm \n", argv[0]);
     exit(0);
   }
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     exit(0);
   }
 
-  if (! imgdiff(image1, image2))
+  if (! limgdiff(image1, image2))
   {
     fprintf(stderr, "imgdiff: function imgdiff failed\n");
     exit(0);

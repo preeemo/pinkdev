@@ -24,10 +24,10 @@ doc:    $(DOC)
 $(BDIR)/addconst:	$(CDIR)/addconst.c $(IDIR)/laddconst.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/laddconst.o
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/addconst.c $(ODIR)/laddconst.o $(ODIR)/mcimage.o -o $(BDIR)/addconst
 
-$(BDIR)/imgdiff:	$(CDIR)/imgdiffEXE.c $(ODIR)/imgdiff.o $(IDIR)/imgdiff.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o
-	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/imgdiffEXE.c $(ODIR)/imgdiff.o $(ODIR)/mcimage.o -o $(BDIR)/imgdiff
+$(BDIR)/imgdiff:	$(CDIR)/imgdiff.c $(IDIR)/limgdiff.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/limgdiff.o
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/imgdiff.c $(ODIR)/limgdiff.o $(ODIR)/mcimage.o -o $(BDIR)/imgdiff
 
-$(BDIR)/thresh:	        $(CDIR)/thresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/thresh.o 
+$(BDIR)/thresh:	        $(CDIR)/thresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lthresh.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/thresh.c $(ODIR)/lthresh.o $(ODIR)/mcimage.o -o $(BDIR)/thresh
 
 $(BDIR)/histe:	        $(CDIR)/histe.c $(IDIR)/lhiste.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/histe.o 
@@ -55,10 +55,10 @@ $(ODIR)/mcimage.o:	$(LDIR)/mcimage.c $(IDIR)/mcimage.h
 $(ODIR)/laddconst.o:	$(LDIR)/laddconst.c $(IDIR)/laddconst.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/laddconst.c -o $(ODIR)/laddconst.o
 
-$(ODIR)/imgdiff.o:	$(LDIR)/imgdiff.c $(IDIR)/imgdiff.h $(IDIR)/mcimage.h
-	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/imgdiff.c -o $(ODIR)/imgdiff.o
+$(ODIR)/limgdiff.o:	$(LDIR)/limgdiff.c $(IDIR)/limgdiff.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/limgdiff.c -o $(ODIR)/limgdiff.o
 
-$(ODIR)/thresh.o:	$(LDIR)/lthresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h
+$(ODIR)/lthresh.o:	$(LDIR)/lthresh.c $(IDIR)/lthresh.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lthresh.c -o $(ODIR)/lthresh.o
 
 $(ODIR)/histe.o:	$(LDIR)/lhiste.c $(IDIR)/lhiste.h $(IDIR)/mcimage.h

@@ -7,15 +7,14 @@
 #include <stdlib.h>
 
 /* =============================================================== */
-int main(int argc, char **argv)
+int main(int argc, char **argv){
 /* =============================================================== */
-{
   struct xvimage * image1;
   uint32_t low, high;
 
   if (argc != 5)
   {
-    fprintf(stderr, "usage: %s in1.pgm, low threshold, high threshold, output image\n", argv[0]);
+    fprintf(stderr, "usage: %s image.pgm, low threshold, high threshold, output image\n", argv[0]);
     exit(0);
   }
 
