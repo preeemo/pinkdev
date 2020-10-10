@@ -16,7 +16,7 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
 
   uint8_t r = 5; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
-  double temp, kernel[(2*r+1)*(2*r+1)]; //FIXA QUA!!!!! DEVI ALLOCARE DINAMICAMENTE
+  double temp, kernel[(2*r+1)*(2*r+1)];
   int  h, v;
   uint8_t *ptrimage, *ptrimagetemp; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
   uint32_t rs, cs, N, n = 0;
@@ -52,17 +52,13 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
       temp = 0;
       
       for (v = -r; v < r+1; v++) {
-        for (h = -r; h < r+1; h++) {
-          
+        for (h = -r; h < r+1; h++)           
           temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(index+h+v*rs)]/(n);  
-          
-        }
       }
       
       ptrimagetemp[index] = temp;
     
     }
-    
   }
   
   for (index = 0; index < N; index++)  
