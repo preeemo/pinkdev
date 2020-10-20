@@ -1,4 +1,4 @@
-/* Compute Pixelwise Complete Graph Averaging  */
+/* Compute Complete Graph Averaging  */
 /* Pietro Morri - october 2020 */
 
 #include <stdint.h>
@@ -6,17 +6,17 @@
 #include <stdlib.h>
 #include <math.h>
 #include <mcimage.h>
-#include <lpixelwiseCGA.h>
+#include <lCGA.h>
 
 /* ==================================== */
-uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process */  
+uint32_t lCGA(struct xvimage * image){     /* input: image to process */  
                                             /* output: modified image  */  
              
 /* ==================================== */
   
 
-  uint8_t r = 17, f = 3, sigma = 36; //r: kernel 'radius'  might pass this as function parameter
-  double d, esp, hpar = 0.35*sigma, weight, CP, up;  //RW[(2*r+1)*(2*r+1)], W[(2*f+1)*(2*f+1)]
+  uint8_t r = 10, f = 1, sigma = 10; //r: kernel 'radius'  might pass this as function parameter
+  double dp, dq, esp, hpar = 0.4*sigma, weight, CP, up;  //RW[(2*r+1)*(2*r+1)], W[(2*f+1)*(2*f+1)]
   int  h, v, hf, vf;
   uint8_t *ptrimage, *ptrimagetemp; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
   uint32_t rs, cs, N, index;
@@ -32,41 +32,44 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
   ptrimagetemp = UCHARDATA(imagetemp);
 
   for (index = 0; index < N; index++) {
-    if (index <= rs*(r + f) || index >= N-rs*(r-1+f))
+    if (index <= rs*(r + f)|| index >= N-rs*(r-1+f))
       ptrimagetemp[index] =  ptrimage[index];
     
     
     else if (index % rs  <= r-1+f || index % rs >= rs-1-r-f)
       ptrimagetemp[index] =  ptrimage[index];
- 
+
 
     else {                                    //index identifies current pixel in pos p
       
-      up=0;
-      CP = 0;
+    
       for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
         for (h = -r; h < r+1; h++) {
          // index + h + rs * v  ------> q 
-          d = 0;
-         
+          dp = 0;
+          dq = 0;
+          CP = 0;
           for (vf = -f; vf < f+1; vf++) {       
             for (hf = -f; hf < f+1; hf++) {   
-
-              d += pow((ptrimage[(index+hf+vf*rs)]/1. - ptrimage[(index+hf+h+(v+vf)*rs)]/1.), 2.);  // u(p + j)  - u (q- j)   
-              //printf("up - uq = %d\n", (ptrimage[(index+hf+vf*rs)] - ptrimage[(index+hf+h+(v+vf)*rs)]));
-              //printf("d = %f\n", d);
+              dq += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)      
             }
-          }         
-          esp = (pow(2*f+1, -2) * d) - 2 * sigma * sigma;
-          //printf("%f\n", esp);
+          }   
+          for (vf = -f; vf < f+1; vf++) {       
+            for (hf = -f; hf < f+1; hf++) {   
+              dp += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)   
+            }
+          }   
+          esp = dp - dq;      
+          esp = (pow(2*f+1, -2) * esp) - 2 * sigma * sigma;
+          //printf("d = %f\n esp = %f\n", d, esp);
           if (esp < 0) esp = 0;
           weight = exp(-esp/(hpar*hpar));
-          CP += weight;
           up += weight * ptrimage[index+h+v*rs];
+          CP += weight;
         }
       }  
 
-      ptrimagetemp[index] = up / CP;
+      ptrimagetemp[index] = 1/CP * up;
 
     }
   }   

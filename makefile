@@ -1,4 +1,4 @@
-EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh $(BDIR)/histe $(BDIR)/wavg $(BDIR)/pixelwiseCGA
+EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh $(BDIR)/histe $(BDIR)/wavg $(BDIR)/pixelwiseCGA $(BDIR)/CGA
 DOC=$(DOCDIR)/tutorialEnglish.html
 
 CCFLAGS = -g -DUNIXIO -Wall
@@ -39,6 +39,9 @@ $(BDIR)/wavg:	        $(CDIR)/wavg.c $(IDIR)/lwavg.h $(IDIR)/mcimage.h $(ODIR)/m
 $(BDIR)/pixelwiseCGA:	        $(CDIR)/pixelwiseCGA.c $(IDIR)/lpixelwiseCGA.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/pixelwiseCGA.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/pixelwiseCGA.c $(ODIR)/lpixelwiseCGA.o $(ODIR)/mcimage.o -lm -o $(BDIR)/pixelwiseCGA
 
+$(BDIR)/CGA:	        $(CDIR)/CGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/CGA.o 
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/CGA.c $(ODIR)/lCGA.o $(ODIR)/mcimage.o -lm -o $(BDIR)/CGA
+
 $(BDIR)/deriche:	$(CDIR)/deriche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lderiche.o
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/deriche.c $(ODIR)/lderiche.o $(ODIR)/mcimage.o -lm -o $(BDIR)/deriche
 
@@ -72,6 +75,9 @@ $(ODIR)/wavg.o:	$(LDIR)/lwavg.c $(IDIR)/lwavg.h $(IDIR)/mcimage.h
 	
 $(ODIR)/pixelwiseCGA.o:	$(LDIR)/lpixelwiseCGA.c $(IDIR)/lpixelwiseCGA.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lpixelwiseCGA.c -o $(ODIR)/lpixelwiseCGA.o
+
+$(ODIR)/CGA.o:	$(LDIR)/lCGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lCGA.c -o $(ODIR)/lCGA.o
 
 $(ODIR)/lderiche.o:	$(LDIR)/lderiche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lderiche.c -o $(ODIR)/lderiche.o
