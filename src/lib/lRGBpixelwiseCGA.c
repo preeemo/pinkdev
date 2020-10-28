@@ -1,4 +1,4 @@
-/* Compute Pixelwise Complete Graph Averaging  */
+/* Compute Pixelwise Complete Graph Averaging on RGB images */
 /* Pietro Morri - october 2020 */
 
 #include <stdint.h>
@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <mcimage.h>
-#include <lpixelwiseCGA.h>
+#include <lRGBpixelwiseCGA.h>
 
 /* ==================================== */
-uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process */  
+uint32_t lRGBpixelwiseCGA(struct xvimage * image){     /* input: image to process */  
                                                     /* output: modified image  */  
              
 /* ==================================== */

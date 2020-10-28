@@ -15,10 +15,10 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
 /* ==================================== */
   
 
-  uint8_t r = 10, f = 1, sigma = 10; //r: kernel 'radius'  might pass this as function parameter
-  double dp, dq, esp, hpar = 0.4*sigma, weight, CP, up;  //RW[(2*r+1)*(2*r+1)], W[(2*f+1)*(2*f+1)]
+  uint8_t r = 10, f = 1, sigma = 6;
+  double dp, dq, esp, hpar = 0.4*sigma, weight, CP, up, B;  
   int  h, v, hf, vf;
-  uint8_t *ptrimage, *ptrimagetemp; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
+  uint8_t *ptrimage, *ptrimagetemp; 
   uint32_t rs, cs, N, index;
   struct xvimage * imagetemp;
 
@@ -41,38 +41,46 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
 
 
     else {                                    //index identifies current pixel in pos p
-      
-    
+      up = 0;
+      CP = 0;
+      B = 0;
+      Q = 0;
       for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
         for (h = -r; h < r+1; h++) {
          // index + h + rs * v  ------> q 
-          dp = 0;
-          dq = 0;
-          CP = 0;
+          B += ptrimage[(index+h+v*rs)];
+        }
+      }    
+      B /= (2*r+1);    
+      for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
+        for (h = -r; h < r+1; h++) {
+        
           for (vf = -f; vf < f+1; vf++) {       
             for (hf = -f; hf < f+1; hf++) {   
-              dq += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)      
+                  
+              Q += ptrimage[(index+hf+h+(v+vf)*rs)];  
             }
-          }   
-          for (vf = -f; vf < f+1; vf++) {       
-            for (hf = -f; hf < f+1; hf++) {   
-              dp += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)   
-            }
-          }   
-          esp = dp - dq;      
-          esp = (pow(2*f+1, -2) * esp) - 2 * sigma * sigma;
-          //printf("d = %f\n esp = %f\n", d, esp);
+          }    
+          Q /= (2*f+1);          
+                
+          esp = Q - B;      
+          esp = (esp/((2*f+1)*(2*f+1))) - 2 * sigma * sigma;
           if (esp < 0) esp = 0;
           weight = exp(-esp/(hpar*hpar));
-          up += weight * ptrimage[index+h+v*rs];
+          up += weight * Q;
           CP += weight;
+    
+        }
+      }    
+      //B /= (2*r+1);
+      CP
+
         }
       }  
 
       ptrimagetemp[index] = 1/CP * up;
 
-    }
-  }   
+    
 
   for (index = 0; index < N; index++)  
     ptrimage[index] = ptrimagetemp[index];

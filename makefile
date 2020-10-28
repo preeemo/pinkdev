@@ -1,4 +1,4 @@
-EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh $(BDIR)/histe $(BDIR)/wavg $(BDIR)/pixelwiseCGA $(BDIR)/CGA
+EXE=$(BDIR)/addconst $(BDIR)/deriche $(BDIR)/ppm2pgm $(BDIR)/pgm2ppm $(BDIR)/imgdiff $(BDIR)/thresh $(BDIR)/histe $(BDIR)/wavg $(BDIR)/pixelwiseCGA $(BDIR)/CGA $(BDIR)/PSNRestimator
 DOC=$(DOCDIR)/tutorialEnglish.html
 
 CCFLAGS = -g -DUNIXIO -Wall
@@ -41,6 +41,9 @@ $(BDIR)/pixelwiseCGA:	        $(CDIR)/pixelwiseCGA.c $(IDIR)/lpixelwiseCGA.h $(I
 
 $(BDIR)/CGA:	        $(CDIR)/CGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/CGA.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/CGA.c $(ODIR)/lCGA.o $(ODIR)/mcimage.o -lm -o $(BDIR)/CGA
+	
+$(BDIR)/PSNRestimator:	        $(CDIR)/PSNRestimator.c $(IDIR)/lPSNRestimator.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/PSNRestimator.o 
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/PSNRestimator.c $(ODIR)/lPSNRestimator.o $(ODIR)/mcimage.o -lm -o $(BDIR)/PSNRestimator
 
 $(BDIR)/deriche:	$(CDIR)/deriche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lderiche.o
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/deriche.c $(ODIR)/lderiche.o $(ODIR)/mcimage.o -lm -o $(BDIR)/deriche
@@ -78,6 +81,9 @@ $(ODIR)/pixelwiseCGA.o:	$(LDIR)/lpixelwiseCGA.c $(IDIR)/lpixelwiseCGA.h $(IDIR)/
 
 $(ODIR)/CGA.o:	$(LDIR)/lCGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lCGA.c -o $(ODIR)/lCGA.o
+
+$(ODIR)/PSNRestimator.o:	$(LDIR)/lPSNRestimator.c $(IDIR)/lPSNRestimator.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lPSNRestimator.c -o $(ODIR)/lPSNRestimator.o
 
 $(ODIR)/lderiche.o:	$(LDIR)/lderiche.c $(IDIR)/lderiche.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lderiche.c -o $(ODIR)/lderiche.o
