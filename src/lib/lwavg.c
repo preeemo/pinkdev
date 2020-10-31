@@ -1,5 +1,5 @@
 /* Compute Weighted Averaging  */
-/* Pietro Morri - september 2020 */
+/* Pietro Morri - october 2020 */
 
 #include <stdint.h>
 #include <stdio.h>
@@ -15,15 +15,15 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
 /* ==================================== */
   
 
-  uint8_t r = 25; //r: kernel 'radius'  might pass this as function parameter
+  uint8_t r = 10; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
   double temp, kernel[(2*r+1)*(2*r+1)], tmp;
   int  h, v;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
   uint32_t rs, cs, N, n = 0;
   struct xvimage * imagetemp;
-  struct xvimage * border1, * border2, * border3;//, * border2, * border3;
-
+  struct xvimage * border1, * border2, * border3;
+  
   rs = image->row_size;
   cs = image->col_size;
   N = rs * cs;
@@ -36,15 +36,16 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
   ptrborder3 = UCHARDATA(border3);
 
   ptrimage = UCHARDATA(image);
+  ptrimagetemp = UCHARDATA(imagetemp);
 
-  //------------Kernel initialization - simple average--------------
+  //-------------------------Kernel initialization - simple average---------------------------------
   for (i = 0; i < (2*r+1)*(2*r+1); i++){
     kernel[i] = 1.0; 	
     n += kernel[i];
   }
-  //----------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------
 
-  //------------------------Create maps-----------------------------
+  //-------------------------------------Create maps------------------------------------------------
   for (i = 0; i < N; i++){
     // Vertical axis
     if (i%rs < rs/2)
@@ -72,16 +73,14 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
     ptrborder3[i] = tmp;
       
   }
-  //----------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------
 
-
-  ptrimagetemp = UCHARDATA(imagetemp);
-  
+  //----------------------------------Compute Moving Average----------------------------------------
   for (i = 0; i < N; i++) {
 
     temp = 0;
 
-    //if (i <= rs*r || i >= N-rs*r-1 || i % rs  <= r-1 || i % rs >= rs-1-r+1){              //in order to keep memory access low we make strange computations only on the border even though the allocated memory is kinda wasted
+    if (i <= rs*r || i >= N-rs*r-1 || i % rs  <= r-1 || i % rs >= rs-1-r+1){              //in order to keep memory access low we make strange computations only on the border even though the allocated memory is kinda wasted
       
       if (i%rs<rs/4 && i < cs/4*rs){
         for (v = -r; v < r+1; v++) {
@@ -174,37 +173,31 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
         
       }
       
-    //}
+    }
 
     // safe part of the image
-    //else{
-      //for (v = -r; v < r+1; v++) {
-        //for (h = -r; h < r+1; h++)  {
-        //  temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);          
-      //}
-    //}
-      //ptrimagetemp[i] = temp;
-    //}
+    else{
+      for (v = -r; v < r+1; v++) {
+        for (h = -r; h < r+1; h++)  {
+          temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);          
+        }
+      }
+    }
     
     ptrimagetemp[i] = temp;
 
   }
-  
+  //------------------------------------------------------------------------------------------------
+
+
+
+  //-------------------------------------Rewrite on Output------------------------------------------
+
   for (index = 0; index < N; index++)  
     ptrimage[index] = ptrimagetemp[index];
 
+  //------------------------------------------------------------------------------------------------
 
   return 1;
 
 }
-
-
-
-/* if (index <= rs*r || index >= N-rs*r-1)   // horizontal borders check
-          
-        
-    
-        else if (index % rs  <= r-1 || index % rs >= rs-1-r+1) //vertical border check
-          continue;
-    
-        else */
