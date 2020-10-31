@@ -16,16 +16,13 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
   
 
   uint8_t r = 5, f = 2, sigma = 26; 
-  double d, esp, hpar = 0.4*sigma, weight, CP, up, temp, tmp;
+  double d, esp, hpar = 0.4*sigma, weight, CP, up, tmp;
   int  h, v, hf, vf;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; 
   uint32_t rs, cs, N, index, i;
   struct xvimage * imagetemp;
   struct xvimage * border1, * border2, * border3;
-  enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12};
-  //enum Statev {cs/4*rs, cs/2*rs, 3*cs/4*rs, cs*rs}
-  //enum Stateh stateh;
-  enum x label;
+  enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12} label;
 
   rs = image->row_size;
   cs = image->col_size;
@@ -74,59 +71,49 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
   }
   //------------------------------------------------------------------------------------------------
 
-  //----------------------------------Compute Moving Average----------------------------------------
+  //----------------------------------Compute Graph Averaging---------------------------------------
 
   for (i = 0; i < N; i++) {
     
-    temp = 0;
-   
-    if (i%rs<rs/4 && i < cs/4*rs){
+    if (i%rs<rs/4 && i < cs/4*rs)
       label = D1;
-    }
-    else if(i%rs<3*rs/4 && i < cs/4*rs){
+    else if(i%rs<3*rs/4 && i < cs/4*rs)
       label = D2;
-    }
-    else if(i%rs<rs && i < cs/4*rs){
+    else if(i%rs<rs && i < cs/4*rs)
       label = D3;
-    }
-    else if(i%rs<rs/4 && i < cs/2*rs){
+    else if(i%rs<rs/4 && i < cs/2*rs)
       label = D4;
-    }
-    else if(i%rs<3*rs/4 && i < cs/2*rs){
+    else if(i%rs<3*rs/4 && i < cs/2*rs)
       label = D5;
-    }
-    else if(i%rs<rs && i < cs/2*rs){
+    else if(i%rs<rs && i < cs/2*rs)
       label = D6;
-    }
-    else if(i%rs<rs/4 && i < 3*cs/4*rs){
+    else if(i%rs<rs/4 && i < 3*cs/4*rs)
       label = D7;
-    }
-    else if(i%rs<3*rs/4 && i < 3*cs/4*rs){
+    else if(i%rs<3*rs/4 && i < 3*cs/4*rs)
       label = D8;
-    }
-    else if(i%rs<rs && i < 3*cs/4*rs){
+    else if(i%rs<rs && i < 3*cs/4*rs)
       label = D9;
-    }
-    else if(i%rs<rs/4 && i < cs*rs){
+    else if(i%rs<rs/4 && i < cs*rs)
       label = D10;
-    }
-    else if(i%rs<3*rs/4 && i < cs*rs){
+    else if(i%rs<3*rs/4 && i < cs*rs)
       label = D11;
-    }
-    else if(i%rs<rs && i < cs*rs){
+    else if(i%rs<rs && i < cs*rs)
       label = D12;
-    }
+    
 
     
     up=0;
     CP = 0;
+
     for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
       for (h = -r; h < r+1; h++) {
+
         d = 0;         
-        for (vf = -f; vf < f+1; vf++) {           
-  
+        
+        for (vf = -f; vf < f+1; vf++) {      // this couple loops through B(f);   
           for (hf = -f; hf < f+1; hf++){
-            switch (label) {
+
+            switch (label) {                //compute distance in a safe zone
               
               case D1: 
                 d += pow((ptrborder3[(i+hf+vf*rs+cs/2*rs+rs/2)]/1. - ptrborder3[(i+hf+h+(v+vf)*rs+cs/2*rs+rs/2)]/1.), 2.);
@@ -170,10 +157,12 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
             }
           }
         }     
+
         esp = (pow(2*f+1, -2) * d) - 2 * sigma * sigma;
         if (esp < 0) esp = 0;
         weight = exp(-esp/(hpar*hpar));
         CP += weight;
+
         switch (label){
 
           case D1: 
@@ -209,20 +198,20 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
           case D11: 
             up += weight * ptrborder2[i+h+v*rs-cs/2*rs];
             break;
-          case D12: 
+          case D12:
+            up += weight * ptrborder3[i+h+v*rs-cs/2*rs-rs/2]; 
             break;
           default:  
             printf("Somwthing went wrong!\n");
             break;
         }
       }
-    }  
+    } 
+
+    // Write on buffer
     ptrimagetemp[i] = up / CP;
 
-
-
   }
-  
   
   //------------------------------------------------------------------------------------------------
 
