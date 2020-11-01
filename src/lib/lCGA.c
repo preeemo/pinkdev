@@ -15,10 +15,10 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
 /* ==================================== */
   
 
-  uint8_t r = 10, f = 1, sigma = 10; //r: kernel 'radius'  might pass this as function parameter
-  double dp, dq, esp, hpar = 0.4*sigma, weight, CP, up;  //RW[(2*r+1)*(2*r+1)], W[(2*f+1)*(2*f+1)]
-  int  h, v, hf, vf;
-  uint8_t *ptrimage, *ptrimagetemp; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
+  uint8_t r = 2, f = 1, sigma = 6; //put r=10
+  double d, esp, hpar = 0.4*sigma, weight, CP, up, B, Qest[(2*f+1)*(2*f+1)], UQ;  
+  int  h, v, hf, vf, hq, vq;
+  uint8_t *ptrimage, *ptrimagetemp; 
   uint32_t rs, cs, N, index;
   struct xvimage * imagetemp;
 
@@ -32,47 +32,80 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
   ptrimagetemp = UCHARDATA(imagetemp);
 
   for (index = 0; index < N; index++) {
-    if (index <= rs*(r + f)|| index >= N-rs*(r-1+f))
+    if (index <= rs*(r + f + f)|| index >= N-rs*(r-1+f+f))
       ptrimagetemp[index] =  ptrimage[index];
     
     
-    else if (index % rs  <= r-1+f || index % rs >= rs-1-r-f)
+    else if (index % rs  <= r-1+f+f || index % rs >= rs-1-r-f-f)
       ptrimagetemp[index] =  ptrimage[index];
 
 
-    else {                                    //index identifies current pixel in pos p
-      
-    
-      for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
-        for (h = -r; h < r+1; h++) {
-         // index + h + rs * v  ------> q 
-          dp = 0;
-          dq = 0;
+    else {
+            
+      for (vq = -f; vq < f+1; vq++) {                                         // get estimate Qi for all Q in B(p,f)
+        for (hq = -f; hq < f+1; hq++) {
+              
+          //d = 0;         
+          UQ = 0;
           CP = 0;
-          for (vf = -f; vf < f+1; vf++) {       
-            for (hf = -f; hf < f+1; hf++) {   
-              dq += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)      
+          
+          //calculate u(Q)
+          for (vf = -f; vf < f+1; vf++) {         //average Qf
+            for (hf = -f; hf < f+1; hf++){
+              UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
             }
-          }   
-          for (vf = -f; vf < f+1; vf++) {       
-            for (hf = -f; hf < f+1; hf++) {   
-              dp += ptrimage[(index+hf+h+(v+vf)*rs)];  // u(p + j)  - u (q- j)   
+          } 
+
+          //calculate w(B,Q)
+          for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
+            for (h = -r; h < r+1; h++) {
+              
+              d = 0;
+                
+              for (vf = -f; vf < f+1; vf++) {         
+                for (hf = -f; hf < f+1; hf++){
+                  d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
+                
+                }
+              }
+              
+              
+              esp = (pow(2*f+1, -2) * d) - 2 * sigma * sigma;
+              if (esp < 0) esp = 0;
+              weight = exp(-esp/(hpar*hpar));
+              CP += weight;
+              Q = UQ * weight;     
+
             }
-          }   
-          esp = dp - dq;      
-          esp = (pow(2*f+1, -2) * esp) - 2 * sigma * sigma;
-          //printf("d = %f\n esp = %f\n", d, esp);
-          if (esp < 0) esp = 0;
-          weight = exp(-esp/(hpar*hpar));
-          up += weight * ptrimage[index+h+v*rs];
-          CP += weight;
-        }
+          }
+          
+
+          Qest[(hq+vq*(2*r+1)+(2*r+1)*(2*r+1)/2)] = UQ * weight;
+
+          Qest[(hq+vq*(2*r+1)+(2*r+1)*(2*r+1)/2)] /= CP;
+
+
+
+        }                  
       }  
 
-      ptrimagetemp[index] = 1/CP * up;
 
+
+      for (vf = -f; vf < f+1; vf++) {                                         // get color for pixel p, u(p) by averaging the estimates Q
+        for (hf = -f; hf < f+1; hf++)                   
+          up += pow((2*f+1), -2) * Qest[(hf+vf*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+      }  
+
+      ptrimagetemp[index] = up;
+   
     }
-  }   
+  
+
+
+  }  
+
+
+    
 
   for (index = 0; index < N; index++)  
     ptrimage[index] = ptrimagetemp[index];
