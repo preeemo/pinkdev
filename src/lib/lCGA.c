@@ -31,15 +31,17 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
   ptrimagetemp = UCHARDATA(imagetemp);
 
   for (index = 0; index < N; index++) {
-    if (index <= rs*(r + 1 + f + f)|| index >= N-rs*(r+1+f+f))
+    if (index < rs*(r + 2*f)|| index > N-rs*(r+2*f))
       ptrimagetemp[index] =  ptrimage[index];
     
     
-    else if (index % rs  <= r+1+f+f || index % rs >= rs-1-r-f-f)
+    else if (index % rs  < (r+2*f) || index % rs > (rs-r-2*f))
       ptrimagetemp[index] =  ptrimage[index];
 
 
     else {
+
+      
 
   
       for (vq = -f; vq < f+1; vq++) {                                         // get estimate Qi for all Q in B(p,f)
@@ -64,7 +66,7 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
               
               for (vf = -f; vf < f+1; vf++) {         
                 for (hf = -f; hf < f+1; hf++) {
-                  d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
+                  //d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
                   //UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
                 
                 }
