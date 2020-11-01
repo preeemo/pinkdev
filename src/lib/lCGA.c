@@ -9,14 +9,13 @@
 #include <lCGA.h>
 
 /* ==================================== */
-uint32_t lCGA(struct xvimage * image){     /* input: image to process */  
-                                            /* output: modified image  */  
-             
+uint32_t lCGA(struct xvimage * image){      /* input: image to process */  
+                                            /* output: modified image  */           
 /* ==================================== */
   
 
   uint8_t r = 2, f = 1, sigma = 6; //put r=10
-  double d, esp, hpar = 0.4*sigma, weight, CP, up, B, Qest[(2*f+1)*(2*f+1)], UQ;  
+  double d, esp, hpar = 0.4*sigma, weight, CP, up, B, Qest[(2*f+1)*(2*f+1)], UQ, Q;  
   int  h, v, hf, vf, hq, vq;
   uint8_t *ptrimage, *ptrimagetemp; 
   uint32_t rs, cs, N, index;
@@ -32,49 +31,49 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
   ptrimagetemp = UCHARDATA(imagetemp);
 
   for (index = 0; index < N; index++) {
-    if (index <= rs*(r + f + f)|| index >= N-rs*(r-1+f+f))
+    if (index <= rs*(r + 1 + f + f)|| index >= N-rs*(r+1+f+f))
       ptrimagetemp[index] =  ptrimage[index];
     
     
-    else if (index % rs  <= r-1+f+f || index % rs >= rs-1-r-f-f)
+    else if (index % rs  <= r+1+f+f || index % rs >= rs-1-r-f-f)
       ptrimagetemp[index] =  ptrimage[index];
 
 
     else {
-            
+
+  
       for (vq = -f; vq < f+1; vq++) {                                         // get estimate Qi for all Q in B(p,f)
         for (hq = -f; hq < f+1; hq++) {
               
           //d = 0;         
           UQ = 0;
           CP = 0;
-          
-          //calculate u(Q)
-          for (vf = -f; vf < f+1; vf++) {         //average Qf
-            for (hf = -f; hf < f+1; hf++){
-              UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
-            }
-          } 
 
           //calculate w(B,Q)
-          for (v = -r; v < r+1; v++)  {           //this couple of for loops search trhough B(r); in pixel q
+          for (v = -r; v < r+1; v++) {           //this couple of for loops search trhough B(r); in pixel q
             for (h = -r; h < r+1; h++) {
               
               d = 0;
-                
+
+              //calculate u(Q)
+             /* for (vf = -f; vf < f+1; vf++) {         //average Qf
+                for (hf = -f; hf < f+1; hf++) {
+                  UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
+                }
+              } */
+              
               for (vf = -f; vf < f+1; vf++) {         
-                for (hf = -f; hf < f+1; hf++){
+                for (hf = -f; hf < f+1; hf++) {
                   d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
+                  //UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
                 
                 }
               }
               
-              
               esp = (pow(2*f+1, -2) * d) - 2 * sigma * sigma;
               if (esp < 0) esp = 0;
               weight = exp(-esp/(hpar*hpar));
-              CP += weight;
-              Q = UQ * weight;     
+              CP += weight; 
 
             }
           }
@@ -84,10 +83,11 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
 
           Qest[(hq+vq*(2*r+1)+(2*r+1)*(2*r+1)/2)] /= CP;
 
-
+          
 
         }                  
       }  
+
 
 
 
@@ -114,3 +114,4 @@ uint32_t lCGA(struct xvimage * image){     /* input: image to process */
   return 1;
 
 }
+
