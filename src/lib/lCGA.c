@@ -14,8 +14,8 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
 /* ==================================== */
   
 
-  uint8_t r = 2, f = 1, sigma = 6; //put r=10
-  double d, esp, hpar = 0.4*sigma, weight, CP, up, B, Qest[(2*f+1)*(2*f+1)], UQ, Q;  
+  uint8_t r = 10, f = 2, sigma = 26;
+  double d, esp, hpar = 0.4*sigma, weight, CP, up, Qest[(2*f+1)*(2*f+1)], UQ, Q;  
   int  h, v, hf, vf, hq, vq;
   uint8_t *ptrimage, *ptrimagetemp; 
   uint32_t rs, cs, N, index;
@@ -31,13 +31,12 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
   ptrimagetemp = UCHARDATA(imagetemp);
 
   for (index = 0; index < N; index++) {
-    if (index < rs*(r + 2*f)|| index > N-rs*(r+2*f))
+    if (index <= rs*(r + 2*f)|| index >= N-rs*(r-1+2*f))
       ptrimagetemp[index] =  ptrimage[index];
     
     
-    else if (index % rs  < (r+2*f) || index % rs > (rs-r-2*f))
+    else if (index % rs  <= r-1+2*f || index % rs >= rs-1-r-2*f)
       ptrimagetemp[index] =  ptrimage[index];
-
 
     else {
 
@@ -48,7 +47,7 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
         for (hq = -f; hq < f+1; hq++) {
               
           //d = 0;         
-          UQ = 0;
+          Q = 0;
           CP = 0;
 
           //calculate w(B,Q)
@@ -56,18 +55,12 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
             for (h = -r; h < r+1; h++) {
               
               d = 0;
+              UQ = 0;
 
-              //calculate u(Q)
-             /* for (vf = -f; vf < f+1; vf++) {         //average Qf
-                for (hf = -f; hf < f+1; hf++) {
-                  UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
-                }
-              } */
-              
               for (vf = -f; vf < f+1; vf++) {         
                 for (hf = -f; hf < f+1; hf++) {
-                  //d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
-                  //UQ += pow((2*f+1), -2.) * ptrimage[(index+hf+hq+(vf+vq)*rs)];
+                  d += pow((ptrimage[(index+hf+hq+(vf+vq)*rs)]/1. - ptrimage[(index+hf+h+hq+(v+vf+hq)*rs)]/1.), 2.);
+                  UQ += pow((2*f+1), -2.) * ptrimage[(index+h+hf+hq+(vf+v+vq)*rs)];
                 
                 }
               }
@@ -76,33 +69,25 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
               if (esp < 0) esp = 0;
               weight = exp(-esp/(hpar*hpar));
               CP += weight; 
-
+              Q += UQ * weight;
             }
           }
           
-
-          Qest[(hq+vq*(2*r+1)+(2*r+1)*(2*r+1)/2)] = UQ * weight;
-
-          Qest[(hq+vq*(2*r+1)+(2*r+1)*(2*r+1)/2)] /= CP;
-
-          
+          Qest[(hq+vq*(2*f+1)+(2*f+1)*(2*f+1)/2)] = Q/CP;
 
         }                  
       }  
 
-
-
+      up = 0; 
 
       for (vf = -f; vf < f+1; vf++) {                                         // get color for pixel p, u(p) by averaging the estimates Q
         for (hf = -f; hf < f+1; hf++)                   
-          up += pow((2*f+1), -2) * Qest[(hf+vf*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+          up += pow((2*f+1), -2) * Qest[(hf+vf*(2*f+1)+(2*f+1)*(2*f+1)/2)];
       }  
 
       ptrimagetemp[index] = up;
    
     }
-  
-
 
   }  
 
