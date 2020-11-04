@@ -21,12 +21,12 @@ int main(int argc, char **argv){
   }
 
   if (readrgbimage(argv[1], &imageR1, &imageG1, &imageB1) == NULL) {
-    fprintf(stderr, "rgb2bw: readrgbimage failed\n");
+    fprintf(stderr, "imgdiff: readrgbimage failed\n");
     exit(0);
   }
 
   if (readrgbimage(argv[2], &imageR2, &imageG2, &imageB2) == NULL) {
-    fprintf(stderr, "rgb2bw: readrgbimage failed\n");
+    fprintf(stderr, "imgdiff: readrgbimage failed\n");
     exit(0);
   }
 

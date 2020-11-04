@@ -9,7 +9,7 @@
 /* =============================================================== */
 int main(int argc, char **argv){
 /* =============================================================== */
-  struct xvimage * R, * G, * B;
+  struct xvimage * imageR, * imageG, * imageB;
   uint32_t low, high;
 
   if (argc != 5) {
@@ -17,7 +17,7 @@ int main(int argc, char **argv){
     exit(0);
   }
 
-  if (readrgbimage(argv[1], &R, &G, &B) == NULL) {
+  if (readrgbimage(argv[1], &imageR, &imageG, &imageB) == 0) {
     fprintf(stderr, "histn: readimage failed\n");
     exit(0);
   }
@@ -25,25 +25,25 @@ int main(int argc, char **argv){
   low = atoi(argv[2]);
   high = atoi(argv[3]);
   
-  if (! lhistn(R, low, high)) {
+  if (! lhistn(imageR, low, high)) {
     fprintf(stderr, "histn: function histn failed\n");
     exit(0);
   }
 
-  if (! lhistn(G, low, high)) {
+  if (! lhistn(imageG, low, high)) {
     fprintf(stderr, "histn: function histn failed\n");
     exit(0);
   }
 
-  if (! lhistn(B, low, high)) {
+  if (! lhistn(imageB, low, high)) {
     fprintf(stderr, "histn: function histn failed\n");
     exit(0);
   }
 
-  writergbimage(R, G, B, argv[argc-1]);
-  freeimage(R);
-  freeimage(G);
-  freeimage(B);
+  writergbimage(imageR, imageG, imageB, argv[argc-1]);
+  freeimage(imageR);
+  freeimage(imageG);
+  freeimage(imageB);
 
   return 0;
 } /* main */

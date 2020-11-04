@@ -9,7 +9,7 @@
 #include <lwavg.h>
 
 /* ==================================== */
-uint32_t lwavg(struct xvimage * image){     /* input: image to process */  
+uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to process */  
                                             /* output: modified image  */  
              
 /* ==================================== */
@@ -17,10 +17,11 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
 
   uint8_t r = 10; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
-  double temp, kernel[(2*r+1)*(2*r+1)], tmp;
+  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.075;
   int  h, v;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
-  uint32_t rs, cs, N, n = 0;
+  uint32_t rs, cs, N;
+  enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12} label;
   struct xvimage * imagetemp;
   struct xvimage * border1, * border2, * border3;
   
@@ -39,13 +40,31 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
   ptrimagetemp = UCHARDATA(imagetemp);
 
   //-------------------------Kernel initialization - simple average---------------------------------
-  for (i = 0; i < (2*r+1)*(2*r+1); i++){
-    kernel[i] = 1.0; 	
-    n += kernel[i];
+
+  for (v = -r; v < r+1; v++) {
+    for (h = -r; h < r+1; h++) {
+
+      if (k == 0) {
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1.0;
+        n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+      }           
+      else if (k == 1) {
+        R = sqrt(h*h + v*v);
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (M_PI * 2*sigma*sigma);         
+        printf("kernel[i] = %f\n", kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
+
+        n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+        //n = ceil(n);
+      }  
+      printf("%f\n", n);
+    }
   }
+
+  // kernel normalization is done when computing the average to save a couple of loops
   //------------------------------------------------------------------------------------------------
 
   //-------------------------------------Create maps------------------------------------------------
+
   for (i = 0; i < N; i++){
     // Vertical axis
     if (i%rs < rs/2)
@@ -73,122 +92,110 @@ uint32_t lwavg(struct xvimage * image){     /* input: image to process */
     ptrborder3[i] = tmp;
       
   }
+
   //------------------------------------------------------------------------------------------------
 
   //----------------------------------Compute Moving Average----------------------------------------
+  
   for (i = 0; i < N; i++) {
 
     temp = 0;
 
     if (i <= rs*r || i >= N-rs*r-1 || i % rs  <= r-1 || i % rs >= rs-1-r+1){              //in order to keep memory access low we make strange computations only on the border even though the allocated memory is kinda wasted
-      
-      if (i%rs<rs/4 && i < cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs+cs/2*rs+rs/2)]/(n);          
-            
+
+      // Choose copy from where to fetch the image
+
+      if (i%rs<rs/4 && i < cs/4*rs)
+        label = D1;
+      else if(i%rs<3*rs/4 && i < cs/4*rs)
+        label = D2;
+      else if(i%rs<rs && i < cs/4*rs)
+        label = D3;
+      else if(i%rs<rs/4 && i < cs/2*rs)
+        label = D4;
+      else if(i%rs<3*rs/4 && i < cs/2*rs)
+        label = D5;
+      else if(i%rs<rs && i < cs/2*rs)
+        label = D6;
+      else if(i%rs<rs/4 && i < 3*cs/4*rs)
+        label = D7;
+      else if(i%rs<3*rs/4 && i < 3*cs/4*rs)
+        label = D8;
+      else if(i%rs<rs && i < 3*cs/4*rs)
+        label = D9;
+      else if(i%rs<rs/4 && i < cs*rs)
+        label = D10;
+      else if(i%rs<3*rs/4 && i < cs*rs)
+        label = D11;
+      else if(i%rs<=rs && i <= cs*rs)
+        label = D12;
+
+
+      // Compute weighted average
+
+      for (v = -r; v < r+1; v++) {
+          for (h = -r; h < r+1; h++){
+
+            switch (label){
+              case D1:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs+cs/2*rs+rs/2)]/(n);      
+                break;
+              case D2:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder2[(i+h+v*rs+cs/2*rs)]/(n);          
+                break;
+              case D3:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs+ cs/2*rs-rs/2)]/(n);          
+                break;
+              case D4:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs+rs/2)]/(n);                           
+                break;
+              case D5:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);      
+                break;
+              case D6:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs-rs/2)]/(n);             
+                break;
+              case D7:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs+rs/2)]/(n);            
+                break;
+              case D8:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);                
+                break;
+              case D9:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs-rs/2)]/(n);
+                break;
+              case D10:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs-cs/2*rs+rs/2)]/(n);          
+                break;
+              case D11:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder2[(i+h+v*rs-cs/2*rs)]/(n); 
+                break;
+              case D12:
+                temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs-cs/2*rs-rs/2)]/(n);     
+                break;
+            }       
         }
       }
-
-      else if (i%rs<3*rs/4 && i < cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder2[(i+h+v*rs+cs/2*rs)]/(n);          
-        }
-
-      }
-
-      
-      else if (i%rs<rs && i < cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs+ cs/2*rs-rs/2)]/(n);          
-        }
-
-      }
-      
-      else if (i%rs<rs/4 && i < cs/2*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs+rs/2)]/(n);                           
-        }
-      }
-
-      else if (i%rs<3*rs/4 && i < cs/2*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);        
-        }
-      }
-
-      else if (i%rs<rs && i < cs/2*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs-rs/2)]/(n);        
-        }
-      }
-
-
-      else if (i%rs<rs/4 && i < 3*cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs+rs/2)]/(n);        
-        }
-      }
-
-      else if (i%rs<3*rs/4 && i < 3*cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);        
-        }
-      }
-
-      else if (i%rs<rs && i < 3*cs/4*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder1[(i+h+v*rs-rs/2)]/(n);        
-        }
-      }
-
-
-      else if (i%rs<rs/4 && i < cs*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs-cs/2*rs+rs/2)]/(n);        
-        }
-      }
-
-      else if (i%rs<3*rs/4 && i < cs*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder2[(i+h+v*rs-cs/2*rs)]/(n);        
-        }
-      }
-
-      else if (i%rs<rs && i < cs*rs){
-        for (v = -r; v < r+1; v++) {
-          for (h = -r; h < r+1; h++)
-            temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrborder3[(i+h+v*rs-cs/2*rs-rs/2)]/(n);        
-        }
-        
-      }
-      
     }
 
-    // safe part of the image
-    else{
+    // Safe part of the image
+
+    else {
+
       for (v = -r; v < r+1; v++) {
         for (h = -r; h < r+1; h++)  {
           temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);          
         }
       }
+    
     }
     
+    // Save computation into buffer 
+
     ptrimagetemp[i] = temp;
 
   }
   //------------------------------------------------------------------------------------------------
-
 
 
   //-------------------------------------Rewrite on Output------------------------------------------

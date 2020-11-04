@@ -16,7 +16,7 @@ int main(int argc, char **argv){
     exit(0);
   }
   
-  if (readrgbimage(argv[1], &R ,&G, &B) == NULL) {
+  if (readrgbimage(argv[1], &R ,&G, &B) == 0) {
     fprintf(stderr, "histe: readimage failed\n");
     exit(0);
   }

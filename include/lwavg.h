@@ -3,7 +3,8 @@
 /* ============== */
 
 extern uint32_t lwavg(
-        struct xvimage *image
+        struct xvimage *image,
+        uint32_t k
         
         );
 

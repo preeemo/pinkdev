@@ -15,19 +15,12 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
 /* ==================================== */
   
 
-<<<<<<< HEAD
-  uint8_t r = 17, f = 3; 
-  double d, sigma = 20.66, esp, hpar = 0.35*sigma, weight, CP, up; 
-  int  h, v, hf, vf;
-  uint8_t *ptrimage, *ptrimagetemp; 
-  uint32_t rs, cs, N, index;
-=======
   uint8_t r = 5, f = 2, sigma = 26; 
   double d, esp, hpar = 0.4*sigma, weight, CP, up, tmp;
   int  h, v, hf, vf;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; 
   uint32_t rs, cs, N, index, i;
->>>>>>> dev
+
   struct xvimage * imagetemp;
   struct xvimage * border1, * border2, * border3;
   enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12} label;
@@ -105,7 +98,7 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
       label = D10;
     else if(i%rs<3*rs/4 && i < cs*rs)
       label = D11;
-    else if(i%rs<rs && i < cs*rs)
+    else if(i%rs<=rs && i <= cs*rs)
       label = D12;
     
 
@@ -220,6 +213,7 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
 
     // Write on buffer
     ptrimagetemp[i] = up / CP;
+
 
   }
   

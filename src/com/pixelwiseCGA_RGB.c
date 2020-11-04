@@ -20,7 +20,7 @@ int main(int argc, char **argv){
 
   if (readrgbimage(argv[1], &imageR, &imageG, &imageB) == 0)
   {
-    fprintf(stderr, "rgb2bw: readrgbimage failed\n");
+    fprintf(stderr, "pixelwiseCGA_RGB: readrgbimage failed\n");
     exit(1);
   }
 
