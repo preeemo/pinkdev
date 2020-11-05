@@ -10,7 +10,7 @@
 
 /* ==================================== */
 uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to process */  
-                                            /* output: modified image  */  
+                                                        /* output: modified image  */  
              
 /* ==================================== */
   
@@ -19,7 +19,7 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
   uint32_t index, i;
   double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.075;
   int  h, v;
-  uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; // = {1,2,1,2,4,2,1,2,1}, gaussian kernel
+  uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3;
   uint32_t rs, cs, N;
   enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12} label;
   struct xvimage * imagetemp;
@@ -44,19 +44,18 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
   for (v = -r; v < r+1; v++) {
     for (h = -r; h < r+1; h++) {
 
-      if (k == 0) {
+      // Unitary kernel - average
+      if (k == 0)                   
         kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1.0;
-        n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
-      }           
+
+      //  Gaussian Kernel     
       else if (k == 1) {
         R = sqrt(h*h + v*v);
-        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (M_PI * 2*sigma*sigma);         
-        printf("kernel[i] = %f\n", kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
-
-        n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
-        //n = ceil(n);
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (M_PI * 2*sigma*sigma);       
       }  
-      printf("%f\n", n);
+
+      n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+        
     }
   }
 
