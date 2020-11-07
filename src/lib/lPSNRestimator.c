@@ -16,7 +16,7 @@ double lPSNRestimator(struct xvimage * image1,    /* input: first image to proce
 
   uint32_t indexpixel;
   uint8_t *ptrimage1, *ptrimage2;
-  double MSE=0, PSNR;
+  double MSE=0;
   uint32_t rs1, cs1, rs2, cs2, N;
 
   rs1 = image1->row_size;
@@ -39,7 +39,9 @@ double lPSNRestimator(struct xvimage * image1,    /* input: first image to proce
   for (indexpixel = 0; indexpixel < N; indexpixel++)
     MSE += pow(ptrimage1[indexpixel] - ptrimage2[indexpixel],2)/N;
 
-  PSNR = 10*log10((255*255)/MSE);
+  // PSNR = 10*log10((255*255)/MSE);
+  // The PSNR must be computed in the program calling this function 
+  // since it has different formulations between the gray and RGB versions
   
   return MSE; /* Everythng went fine */
 

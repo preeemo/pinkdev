@@ -6,6 +6,7 @@
 #include <mcimage.h>
 #include <lPSNRestimator.h>
 #include <stdlib.h>
+#include <errno.h>
 
 /* =============================================================== */
 int main(int argc, char **argv){
@@ -44,11 +45,13 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  fp = fopen("home/PSNR_estimates.txt", "w");
+  fp = fopen("SNR_estimates.txt", "w+");
   
   if (fp == NULL) {
       printf("PSNRestimator: can't write output file\n");
       printf("PSNR = %f dB\n", PSNR);
+      printf("Error %d \n", errno);
+      printf("It's null");
       exit(1);             
   }
   

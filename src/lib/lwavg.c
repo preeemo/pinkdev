@@ -15,9 +15,9 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 /* ==================================== */
   
 
-  uint8_t r = 100; //r: kernel 'radius'  might pass this as function parameter
+  uint8_t r = 3; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
-  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.000100;
+  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.01;
   int  h, v, x, y;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3;
   uint32_t rs, cs, N;
