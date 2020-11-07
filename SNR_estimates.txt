@@ -1,0 +1,11 @@
+---------------// PSNR Estimator Function //---------------
+
+
+Inputs:
+		images/images/lena_std_noisy.ppm;
+		images/images/lena_std.ppm;
+
+
+Outputs:
+		MSE = 385.27
+		PSNR = 22.27dB
