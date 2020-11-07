@@ -15,15 +15,16 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 /* ==================================== */
   
 
-  uint8_t r = 10; //r: kernel 'radius'  might pass this as function parameter
+  uint8_t r = 100; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
-  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.075;
-  int  h, v;
+  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.000100;
+  int  h, v, x, y;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3;
   uint32_t rs, cs, N;
   enum x {D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12} label;
   struct xvimage * imagetemp;
   struct xvimage * border1, * border2, * border3;
+  char key; 
   
   rs = image->row_size;
   cs = image->col_size;
@@ -41,6 +42,19 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 
   //-------------------------Kernel initialization - simple average---------------------------------
 
+  if (k == 5) {
+    printf("Input kernel radius 'r':\n");
+    scanf("%d", &x);
+    r = (uint8_t)x;
+    printf("Do you also want to input kenel elements? [y/n]\n");
+    scanf(" %c", &key);
+    if (key == 'y')
+      k = 6;
+    else
+      k = 0;
+
+  }
+
   for (v = -r; v < r+1; v++) {
     for (h = -r; h < r+1; h++) {
 
@@ -48,17 +62,62 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       if (k == 0)                   
         kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1.0;
 
-      //  Gaussian Kernel     
+      // Gaussian Kernel     
       else if (k == 1) {
         R = sqrt(h*h + v*v);
         kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (M_PI * 2*sigma*sigma);       
       }  
 
-      n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
-        
-    }
-  }
+      // Vertical edge detection
+      else if (k == 2){
+        x = 2*r+1;
+        if(h+r<x/3)
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1;
+        else if (r+h>2*x/3)
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = -1;
+        else
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 0;
+      }
+      
+      // Horizontal edge detection
+      else if (k == 3){
+        x = 2*r+1;
+        if(v+r<x/3)
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1;
+        else if (r+v>2*x/3)
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = -1;
+        else
+          kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 0; 
+      }
 
+      // Laplacian Kernel     
+      else if (k == 4) {
+        R = sqrt(h*h + v*v);
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (1-R*R)/(M_PI*pow(sigma,4))*(exp(-(R * R) / 2*sigma*sigma* M_PI));       
+      }
+
+      // Read input kernel
+      else if (k == 5){
+        x = v + r + 1;
+        y = h + r + 1;
+        printf("Enter element (%d, %d): ", x, y);
+        scanf("%lf", &temp);
+        printf("\n");
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = temp;
+      }
+
+      n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
+      if (n == 0 && k!=4) n = 1;        
+    }
+  }  
+  
+  printf("%f\n", n);
+  for (v = -r; v < r+1; v++) {
+    for (h = -r; h < r+1; h++) {
+      printf("%.0g ", kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
+    }
+    printf("\n");
+  }
   // kernel normalization is done when computing the average to save a couple of loops
   //------------------------------------------------------------------------------------------------
 
@@ -181,17 +240,15 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 
     else {
 
-      for (v = -r; v < r+1; v++) {
-        for (h = -r; h < r+1; h++)  {
+      for (v = -r; v < r+1; v++) 
+        for (h = -r; h < r+1; h++)
           temp += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]*ptrimage[(i+h+v*rs)]/(n);          
-        }
-      }
-    
+          
     }
     
     // Save computation into buffer 
-
-    ptrimagetemp[i] = temp;
+    if (temp > 255.0) temp = 255;
+    ptrimagetemp[i] = (uint8_t)temp;
 
   }
   //------------------------------------------------------------------------------------------------

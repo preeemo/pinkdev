@@ -25,6 +25,11 @@ int main(int argc, char **argv){
 
   kernel = atoi(argv[2]);
 
+  if (kernel > 5){
+    fprintf(stderr, "wavg: wrong kernel type \n");
+    exit(0);
+  }
+
   if (! lwavg(imageR, kernel)) {
     fprintf(stderr, "wavgRGB: function wavgRGB failed\n");
     exit(0);
