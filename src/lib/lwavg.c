@@ -71,7 +71,7 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       // Vertical edge detection
       else if (k == 2){
         x = 2*r+1;
-        if(h+r<x/3)
+        if (h+r<x/3)
           kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1;
         else if (r+h>2*x/3)
           kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = -1;
@@ -110,14 +110,7 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       if (n == 0 && k!=4) n = 1;        
     }
   }  
-  
-  printf("%f\n", n);
-  for (v = -r; v < r+1; v++) {
-    for (h = -r; h < r+1; h++) {
-      printf("%.0g ", kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
-    }
-    printf("\n");
-  }
+
   // kernel normalization is done when computing the average to save a couple of loops
   //------------------------------------------------------------------------------------------------
 
