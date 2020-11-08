@@ -65,7 +65,7 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       // Gaussian Kernel     
       else if (k == 1) {
         R = sqrt(h*h + v*v);
-        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (M_PI * 2*sigma*sigma);       
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (exp(-(R * R) / 2*sigma*sigma* M_PI)) / (2*sigma*sigma);       
       }  
 
       // Vertical edge detection
@@ -93,7 +93,9 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       // Laplacian Kernel     
       else if (k == 4) {
         R = sqrt(h*h + v*v);
-        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (1-R*R)/(M_PI*pow(sigma,4))*(exp(-(R * R) / 2*sigma*sigma* M_PI));       
+        //kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (1-R*R)/(M_PI*pow(sigma,4))*(exp(-(R * R) / 2*sigma*sigma* M_PI));       
+        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1;//(R*R)/(sigma*sigma)-2;
+        printf("%d",kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
       }
 
       // Read input kernel
@@ -253,6 +255,12 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
     ptrimage[index] = ptrimagetemp[index];
 
   //------------------------------------------------------------------------------------------------
+
+  
+  freeimage(ptrimagetemp);
+  freeimage(ptrborder1);
+  freeimage(ptrborder2);
+  freeimage(ptrborder3);
 
   return 1;
 

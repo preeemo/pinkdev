@@ -10,8 +10,8 @@
 
 /* ==================================== */
 uint32_t lpixelwiseCGA_RGB( struct xvimage * imageR,         /* input: image to process */  
-                        struct xvimage * imageG,
-                        struct xvimage * imageB
+                            struct xvimage * imageG,
+                            struct xvimage * imageB
 
 ){                                                     /* output: modified image  */  
              
@@ -180,8 +180,6 @@ uint32_t lpixelwiseCGA_RGB( struct xvimage * imageR,         /* input: image to 
     else if(i%rs<=rs && i <= cs*rs)
       label = D12;
     
-
-
     
     upR=0;
     upG=0;
@@ -364,6 +362,19 @@ uint32_t lpixelwiseCGA_RGB( struct xvimage * imageR,         /* input: image to 
     }
 
   //------------------------------------------------------------------------------------------------
+
+  freeimage(ptrimagetempR);
+  freeimage(ptrimagetempG);
+  freeimage(ptrimagetempB);
+  freeimage(ptrborder1R);
+  freeimage(ptrborder2R);
+  freeimage(ptrborder3R);
+  freeimage(ptrborder1G);
+  freeimage(ptrborder2G);
+  freeimage(ptrborder3G);
+  freeimage(ptrborder1B);
+  freeimage(ptrborder2B);
+  freeimage(ptrborder3B);
 
   return 1;
 

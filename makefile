@@ -64,8 +64,8 @@ $(BDIR)/pixelwiseCGA_RGB:	$(CDIR)/pixelwiseCGA_RGB.c $(IDIR)/lpixelwiseCGA_RGB.h
 $(BDIR)/CGA:		$(CDIR)/CGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lCGA.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/CGA.c $(ODIR)/lCGA.o $(ODIR)/mcimage.o -lm -o $(BDIR)/CGA
 	
-$(BDIR)/CGA_RGB:	$(CDIR)/CGA_RGB.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lCGA.o 
-	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/CGA_RGB.c $(ODIR)/lCGA.o $(ODIR)/mcimage.o -lm -o $(BDIR)/CGA_RGB
+$(BDIR)/CGA_RGB:	$(CDIR)/CGA_RGB.c $(IDIR)/lCGA_RGB.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/lCGA_RGB.o 
+	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/CGA_RGB.c $(ODIR)/lCGA_RGB.o $(ODIR)/mcimage.o -lm -o $(BDIR)/CGA_RGB
 	
 $(BDIR)/PSNRestimator:	$(CDIR)/PSNRestimator.c $(IDIR)/lPSNRestimator.h $(IDIR)/mcimage.h $(ODIR)/mcimage.o $(ODIR)/PSNRestimator.o 
 	$(CC) $(CCFLAGS) -I$(IDIR) $(CDIR)/PSNRestimator.c $(ODIR)/lPSNRestimator.o $(ODIR)/mcimage.o -lm -o $(BDIR)/PSNRestimator
@@ -115,6 +115,9 @@ $(ODIR)/lpixelwiseCGA_RGB.o:	$(LDIR)/lpixelwiseCGA_RGB.c $(IDIR)/lpixelwiseCGA_R
 
 $(ODIR)/lCGA.o:	$(LDIR)/lCGA.c $(IDIR)/lCGA.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lCGA.c -o $(ODIR)/lCGA.o
+
+$(ODIR)/lCGA_RGB.o:	$(LDIR)/lCGA_RGB.c $(IDIR)/lCGA_RGB.h $(IDIR)/mcimage.h
+	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lCGA_RGB.c -o $(ODIR)/lCGA_RGB.o
 
 $(ODIR)/PSNRestimator.o:	$(LDIR)/lPSNRestimator.c $(IDIR)/lPSNRestimator.h $(IDIR)/mcimage.h
 	$(CC) -c $(CCFLAGS) -I$(IDIR) $(LDIR)/lPSNRestimator.c -o $(ODIR)/lPSNRestimator.o

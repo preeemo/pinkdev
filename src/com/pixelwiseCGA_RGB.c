@@ -1,4 +1,4 @@
-/* Call to pixelwise */
+/* Call to pixelwiseCGA_RGB */
 
 #include <stdint.h>
 #include <stdio.h>

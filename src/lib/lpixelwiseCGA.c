@@ -45,7 +45,6 @@ uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process
 
   //----------------------------------Choose parameters---------------------------------------------
   if(sigma < 15){
-    printf(" not ok");
     r = 10;
     f = 1;
     hpar = 0.4*sigma;
@@ -258,6 +257,13 @@ uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process
     ptrimage[index] = ptrimagetemp[index];
 
   //------------------------------------------------------------------------------------------------
+
+
+
+  freeimage(ptrimagetemp);
+  freeimage(ptrborder1);
+  freeimage(ptrborder2);
+  freeimage(ptrborder3);
 
   return 1;
 

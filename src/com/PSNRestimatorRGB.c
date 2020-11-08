@@ -62,9 +62,7 @@ int main(int argc, char **argv){
   
   if (fp == NULL) {
     printf("PSNRestimator: can't write output file\n");
-    printf("PSNR = %f dB\n", PSNR);
     printf("Error %d \n", errno);
-    printf("It's null");
     exit(1);             
   }
 
