@@ -11,14 +11,13 @@ int main(int argc, char **argv){
 /* =============================================================== */
 
   struct xvimage * image1;
-  
 
   if (argc != 3)  {
-    fprintf(stderr, "usage: %s in1.pgm,  output image\n", argv[0]);
+    fprintf(stderr, "usage: %s\n\tin1.pgm,\n\toutput image\n", argv[0]);
     exit(0);
   }
 
-  image1 = readimage(argv[1]);  
+  image1 = readimage(argv[1]);
 
   if (image1 == NULL)  {
     fprintf(stderr, "pixelwiseCGA: readimage failed\n");
@@ -29,7 +28,7 @@ int main(int argc, char **argv){
     exit(0);
   }
 
-  writeimage(image1, argv[2]);
+  writeimage(image1, argv[argc-1]);
   freeimage(image1);
 
   return 0;
