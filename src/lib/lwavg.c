@@ -15,9 +15,9 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 /* ==================================== */
   
 
-  uint8_t r = 3; //r: kernel 'radius'  might pass this as function parameter
+  uint8_t r = 2; //r: kernel 'radius'  might pass this as function parameter
   uint32_t index, i;
-  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.01;
+  double temp, n = 0.0, kernel[(2*r+1)*(2*r+1)], tmp, R, sigma = 0.00001;
   int  h, v, x, y;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3;
   uint32_t rs, cs, N;
@@ -42,14 +42,14 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 
   //-------------------------Kernel initialization - simple average---------------------------------
 
-  if (k == 5) {
+  if (k == 4) {
     printf("Input kernel radius 'r':\n");
     scanf("%d", &x);
     r = (uint8_t)x;
     printf("Do you also want to input kenel elements? [y/n]\n");
     scanf(" %c", &key);
     if (key == 'y')
-      k = 6;
+      k = 4;
     else
       k = 0;
 
@@ -90,16 +90,8 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
           kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 0; 
       }
 
-      // Laplacian Kernel     
-      else if (k == 4) {
-        R = sqrt(h*h + v*v);
-        //kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = (1-R*R)/(M_PI*pow(sigma,4))*(exp(-(R * R) / 2*sigma*sigma* M_PI));       
-        kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)] = 1;//(R*R)/(sigma*sigma)-2;
-        printf("%d",kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)]);
-      }
-
       // Read input kernel
-      else if (k == 5){
+      else if (k == 4){
         x = v + r + 1;
         y = h + r + 1;
         printf("Enter element (%d, %d): ", x, y);
@@ -109,7 +101,7 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
       }
 
       n += kernel[(h+v*(2*r+1)+(2*r+1)*(2*r+1)/2)];
-      if (n == 0 && k!=4) n = 1;        
+      if (n == 0.0) n = 1;        
     }
   }  
 
@@ -256,11 +248,6 @@ uint32_t lwavg(struct xvimage * image, uint32_t k){     /* input: image to proce
 
   //------------------------------------------------------------------------------------------------
 
-  
-  freeimage(ptrimagetemp);
-  freeimage(ptrborder1);
-  freeimage(ptrborder2);
-  freeimage(ptrborder3);
 
   return 1;
 

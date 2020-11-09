@@ -17,7 +17,7 @@ uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process
 /* ==================================== */
   
 
-  uint8_t r, f, sigma = 10; 
+  uint8_t r, f, sigma = 27.5; 
   double d, esp, hpar, weight, CP, up, tmp;
   int  h, v, hf, vf;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; 
@@ -44,22 +44,22 @@ uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process
   ptrimagetemp = UCHARDATA(imagetemp);  
 
   //----------------------------------Choose parameters---------------------------------------------
-  if(sigma < 15){
+  if(sigma <= 15){
     r = 10;
     f = 1;
     hpar = 0.4*sigma;
   } 
-  else if (sigma < 30){
+  else if (sigma > 15 && sigma <= 30){
     r = 10;
     f = 2;
     hpar = 0.4*sigma;
   }
-  else if (sigma < 45){
+  else if (sigma > 30 && sigma <= 45){
     r = 17;
     f = 3;
     hpar = 0.35*sigma;
   }
-  else if (sigma < 75){
+  else if (sigma > 45 && sigma <= 75){
     r = 17;
     f = 4;
     hpar = 0.35*sigma;
@@ -258,12 +258,6 @@ uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process
 
   //------------------------------------------------------------------------------------------------
 
-
-
-  freeimage(ptrimagetemp);
-  freeimage(ptrborder1);
-  freeimage(ptrborder2);
-  freeimage(ptrborder3);
 
   return 1;
 

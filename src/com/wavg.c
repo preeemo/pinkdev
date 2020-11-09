@@ -15,7 +15,7 @@ int main(int argc, char **argv){
   
 
   if (argc != 4)  {
-    fprintf(stderr, "usage %s:\nin1.pgm,\nk: kernel type\n\t'0': unitary kernel (simple average);\n\t'1': gaussian kernel;\n\t'2': vertical edge detection\n\t'3': horizontal edge detection\n\t'4': laplacian kernel\n\t'5': input kernel\noutput image\n", argv[0]);
+    fprintf(stderr, "usage %s:\nin1.pgm,\nk: kernel type\n\t'0': unitary kernel (simple average);\n\t'1': gaussian kernel;\n\t'2': vertical edge detection\n\t'3': horizontal edge detection\n\t'4': input kernel\noutput image\n", argv[0]);
     exit(0);
   }
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv){
 
   kernel = atoi(argv[2]);
 
-  if (kernel > 5){
+  if (kernel > 4){
     fprintf(stderr, "wavg: wrong kernel type \n");
     exit(0);
   }

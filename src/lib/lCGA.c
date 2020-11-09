@@ -14,7 +14,7 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
 /* ==================================== */
   
 
-  uint8_t r, f, sigma = 20.66;
+  uint8_t r, f, sigma = 12.5;
   double d, esp, hpar, weight, CP, up, Qest[(2*f+1)*(2*f+1)], UQ, Q, tmp;  
   int  h, v, hf, vf, hq, vq;
 
@@ -42,22 +42,22 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
 
 
   //----------------------------------Choose parameters---------------------------------------------
-  if(sigma < 15){
+  if(sigma <= 15){
     r = 10;
     f = 1;
     hpar = 0.4*sigma;
   } 
-  else if (sigma < 30){
+  else if (sigma > 15 && sigma <= 30){
     r = 10;
     f = 2;
     hpar = 0.4*sigma;
   }
-  else if (sigma < 45){
+  else if (sigma > 30 && sigma <= 45){
     r = 17;
     f = 3;
     hpar = 0.35*sigma;
   }
-  else if (sigma < 75){
+  else if (sigma > 45 && sigma <= 75){
     r = 17;
     f = 4;
     hpar = 0.35*sigma;
@@ -259,12 +259,6 @@ uint32_t lCGA(struct xvimage * image){      /* input: image to process */
 
   for (index = 0; index < N; index++)  
     ptrimage[index] = ptrimagetemp[index];
-
-
-  freeimage(ptrimagetemp);
-  freeimage(ptrborder1);
-  freeimage(ptrborder2);
-  freeimage(ptrborder3);
 
 
   return 1;

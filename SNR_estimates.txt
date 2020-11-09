@@ -2,10 +2,10 @@
 
 
 Inputs:
-		images/images/lena_std_noisy.ppm;
-		images/images/lena_std.ppm;
+		images/images/lena_grey.pgm;
+		out.pgm;
 
 
 Outputs:
-		MSE = 385.27
-		PSNR = 22.27dB
+		MSE = 65.94
+		PSNR = 29.94dB

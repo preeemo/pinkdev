@@ -18,7 +18,7 @@ uint32_t lCGA_RGB(struct xvimage * imageR,
 /* ==================================== */
   
 
-  uint8_t r, f, sigma = 26;
+  uint8_t r, f, sigma = 15;
   double d, dR, dG, dB, esp, hpar, weight, CP, upR, upG, upB, QestR[(2*f+1)*(2*f+1)], QestG[(2*f+1)*(2*f+1)], QestB[(2*f+1)*(2*f+1)], UQR, QR, UQG, QG, UQB, QB, tmpR, tmpG, tmpB;  
   int  h, v, hf, vf, hq, vq;
 
@@ -71,12 +71,12 @@ uint32_t lCGA_RGB(struct xvimage * imageR,
   ptrimageB = UCHARDATA(imageB);
 
   //----------------------------------Choose parameters---------------------------------------------
-  if(sigma < 25){
+  if(sigma <= 25){
     r = 10;
     f = 1;
     hpar = 0.55*sigma;
   } 
-  else if (sigma < 55){
+  else if (sigma > 25 && sigma <= 55){
     r = 17;
     f = 2;
     hpar = 0.4*sigma;
@@ -369,22 +369,7 @@ uint32_t lCGA_RGB(struct xvimage * imageR,
     ptrimageR[index] = ptrimagetempR[index]; 
     ptrimageG[index] = ptrimagetempG[index]; 
     ptrimageB[index] = ptrimagetempB[index];
-  }
-
-  
-  freeimage(ptrimagetempR);
-  freeimage(ptrimagetempG);
-  freeimage(ptrimagetempB);
-  freeimage(ptrborder1R);
-  freeimage(ptrborder2R);
-  freeimage(ptrborder3R);
-  freeimage(ptrborder1G);
-  freeimage(ptrborder2G);
-  freeimage(ptrborder3G);
-  freeimage(ptrborder1B);
-  freeimage(ptrborder2B);
-  freeimage(ptrborder3B);
-  
+  }  
   
   return 1;
 

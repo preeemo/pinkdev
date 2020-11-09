@@ -71,12 +71,12 @@ uint32_t lpixelwiseCGA_RGB( struct xvimage * imageR,         /* input: image to 
 
 
   //----------------------------------Choose parameters---------------------------------------------
-  if(sigma < 25){
+  if(sigma <= 25){
     r = 10;
     f = 1;
     hpar = 0.55*sigma;
   } 
-  else if (sigma < 55){
+  else if (sigma > 25 && sigma <= 55){
     r = 17;
     f = 2;
     hpar = 0.4*sigma;
@@ -363,18 +363,6 @@ uint32_t lpixelwiseCGA_RGB( struct xvimage * imageR,         /* input: image to 
 
   //------------------------------------------------------------------------------------------------
 
-  freeimage(ptrimagetempR);
-  freeimage(ptrimagetempG);
-  freeimage(ptrimagetempB);
-  freeimage(ptrborder1R);
-  freeimage(ptrborder2R);
-  freeimage(ptrborder3R);
-  freeimage(ptrborder1G);
-  freeimage(ptrborder2G);
-  freeimage(ptrborder3G);
-  freeimage(ptrborder1B);
-  freeimage(ptrborder2B);
-  freeimage(ptrborder3B);
 
   return 1;
 
