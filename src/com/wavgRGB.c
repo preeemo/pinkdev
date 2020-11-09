@@ -14,8 +14,8 @@ int main(int argc, char **argv){
   uint32_t kernel = 0;
   
   if (argc != 4) {
-    fprintf(stderr, "usage: %s in.ppm,\n k: kernel type ('0': unitary kernel - simple average; '1': gaussian kernel),\n out.pgm\n", argv[0]);
-    exit(1);
+    fprintf(stderr, "usage %s:\nin1.pgm,\nk: kernel type\n\t'0': unitary kernel (simple average);\n\t'1': gaussian kernel;\n\t'2': vertical edge detection\n\t'3': horizontal edge detection\n\t'4': input kernel\noutput image\n", argv[0]);
+    exit(0);
   }
 
   if (readrgbimage(argv[1], &imageR, &imageG, &imageB) == 0) {
@@ -25,7 +25,7 @@ int main(int argc, char **argv){
 
   kernel = atoi(argv[2]);
 
-  if (kernel > 5){
+  if (kernel > 4){
     fprintf(stderr, "wavg: wrong kernel type \n");
     exit(0);
   }

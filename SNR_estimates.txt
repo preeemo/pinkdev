@@ -1,0 +1,11 @@
+---------------// PSNR Estimator Function //---------------
+
+
+Inputs:
+		images/images/lena_grey.pgm;
+		out.pgm;
+
+
+Outputs:
+		MSE = 65.94
+		PSNR = 29.94dB

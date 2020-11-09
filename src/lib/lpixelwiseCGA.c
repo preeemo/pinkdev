@@ -9,14 +9,16 @@
 #include <lpixelwiseCGA.h>
 
 /* ==================================== */
-uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process */  
-                                                    /* output: modified image  */  
+uint32_t lpixelwiseCGA(struct xvimage * image         /* input: image to process */  
+                       
+
+){                                                     /* output: modified image  */  
              
 /* ==================================== */
   
 
-  uint8_t r = 5, f = 2, sigma = 26; 
-  double d, esp, hpar = 0.4*sigma, weight, CP, up, tmp;
+  uint8_t r, f, sigma = 27.5; 
+  double d, esp, hpar, weight, CP, up, tmp;
   int  h, v, hf, vf;
   uint8_t *ptrimage, *ptrimagetemp, *ptrborder1, *ptrborder2, *ptrborder3; 
   uint32_t rs, cs, N, index, i;
@@ -39,7 +41,36 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
   ptrborder3 = UCHARDATA(border3);
 
   ptrimage = UCHARDATA(image);
-  ptrimagetemp = UCHARDATA(imagetemp);
+  ptrimagetemp = UCHARDATA(imagetemp);  
+
+  //----------------------------------Choose parameters---------------------------------------------
+  if(sigma <= 15){
+    r = 10;
+    f = 1;
+    hpar = 0.4*sigma;
+  } 
+  else if (sigma > 15 && sigma <= 30){
+    r = 10;
+    f = 2;
+    hpar = 0.4*sigma;
+  }
+  else if (sigma > 30 && sigma <= 45){
+    r = 17;
+    f = 3;
+    hpar = 0.35*sigma;
+  }
+  else if (sigma > 45 && sigma <= 75){
+    r = 17;
+    f = 4;
+    hpar = 0.35*sigma;
+  }
+  else {
+    r = 17;
+    f = 5;
+    hpar = 0.3*sigma;
+  }
+
+  //------------------------------------------------------------------------------------------------
 
 
   //-------------------------------------Create maps------------------------------------------------
@@ -226,6 +257,7 @@ uint32_t lpixelwiseCGA(struct xvimage * image){     /* input: image to process *
     ptrimage[index] = ptrimagetemp[index];
 
   //------------------------------------------------------------------------------------------------
+
 
   return 1;
 

@@ -1,9 +1,9 @@
-/* Call to CGA */
+/* Call to CGA_RGB*/
 
 #include <stdint.h>
 #include <stdio.h>
 #include <mcimage.h>
-#include <lCGA.h>
+#include <lCGA_RGB.h>
 #include <stdlib.h>
 
 /* =============================================================== */
@@ -24,26 +24,11 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  if (! lCGA(imageR))  {
+  if (! lCGA_RGB(imageR, imageG, imageB))  {
     fprintf(stderr, "CGA_RGB: function CGA failed\n");
     exit(0);
   }
 
-  printf("Red completed\n");
-
-  if (! lCGA(imageG))  {
-    fprintf(stderr, "CGA_RGB: function CGA failed\n");
-    exit(0);
-  }
-
-  printf("Green completed\n");
-
-  if (! lCGA(imageB))  {
-    fprintf(stderr, "CGA_RGB: function CGA failed\n");
-    exit(0);
-  }
-
-  printf("Blue completed\n");
 
   writergbimage(imageR, imageG, imageB, argv[argc-1]);
   freeimage(imageR);

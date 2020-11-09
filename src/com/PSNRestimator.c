@@ -6,6 +6,7 @@
 #include <mcimage.h>
 #include <lPSNRestimator.h>
 #include <stdlib.h>
+#include <errno.h>
 
 /* =============================================================== */
 int main(int argc, char **argv){
@@ -15,6 +16,7 @@ int main(int argc, char **argv){
   struct xvimage * image2;
   double PSNR, MSE;
   FILE *fp;
+  char sentence[255];
 
 
   if (argc != 3) {
@@ -44,15 +46,16 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  fp = fopen("home/PSNR_estimates.txt", "w");
+  fp = fopen("SNR_estimates.txt", "w+");
   
   if (fp == NULL) {
-      printf("PSNRestimator: can't write output file\n");
-      printf("PSNR = %f dB\n", PSNR);
-      exit(1);             
+    printf("PSNRestimator: can't write output file\n");
+    printf("Error %d \n", errno);
+    exit(1);             
   }
-  
-  fprintf(fp,"%f", PSNR);
+
+  sprintf(sentence, "---------------// PSNR Estimator Function //---------------\n\n\nInputs:\n\t\t%s;\n\t\t%s;\n\n\nOutputs:\n\t\tMSE = %.2f\n\t\tPSNR = %.2fdB", argv[1], argv[2], MSE, PSNR);
+  fprintf(fp,"%s", sentence);
   fclose(fp);
 
 
